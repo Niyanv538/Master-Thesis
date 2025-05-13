@@ -270,7 +270,7 @@ ggplot(class_dist, aes(x = as.factor(adhdtype), y = n, fill = source)) +
   scale_fill_manual(values = c("Original" = "#1f77b4", "Augmented" = "#ff7f0e"))
 
 
-# Classes distribution
+# Class distribution
 eeg_data %>%
   count(adhdtype) %>%
   mutate(percentage = round(n / sum(n), 3))
@@ -278,6 +278,51 @@ eeg_data %>%
 augmented_data %>%
   count(adhdtype) %>%
   mutate(percentage = round(n / sum(n), 3))
+
+# Within-Cluster analysis of the most prominent features per subtype
+library(purrr)
+library(tibble)
+library(dplyr)
+
+coef_matrix <- coef(manual_fit, s = best_params$penalty)
+
+# Turn sparse matrices into a tidy dataframe
+tidy_coef <- map_dfr(names(coef_matrix), function(class_name) {
+  mat <- as.matrix(coef_matrix[[class_name]])
+  tibble(
+    term = rownames(mat),
+    estimate = as.numeric(mat),
+    class = class_name
+  )
+})
+
+
+# Remove intercept and filter non-zero effects
+non_zero_coef <- tidy_coef %>%
+  filter(term != "(Intercept)", estimate != 0)
+
+# View top 10 features per subtype
+non_zero_coef %>%
+  group_by(class) %>%
+  slice_max(abs(estimate), n = 10) %>%
+  arrange(class, desc(abs(estimate)))
+
+print(non_zero_coef, n = Inf)
+
+# Visualize 
+non_zero_coef %>%
+  group_by(class) %>%
+  slice_max(abs(estimate), n = 8) %>%
+  ggplot(aes(x = reorder(term, estimate), y = estimate, fill = estimate > 0)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  facet_wrap(~class, scales = "free_y") +
+  labs(
+    title = "Top EEG Features Influencing Each ADHD Subtype",
+    x = "EEG Feature",
+    y = "Log-Odds Estimate"
+  ) +
+  theme_minimal()
 
 
 # ----------------- The Bajestani Dataset --------------------------------------
