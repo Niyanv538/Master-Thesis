@@ -79,7 +79,7 @@ for g = 1:length(groups)
     end
 end
 
-disp('✅ Preprocessing complete! Check preprocessed_subjects folder.')
+disp('Preprocessing complete! Check preprocessed_subjects folder.')
 
 % === Preprocessing Function ===
 function out = preprocess_eeg(data, fs)
@@ -195,7 +195,7 @@ header = [{'Subject', 'Group', 'Task', 'Channel'}, band_names, {'TBR'}];
 
 % === SAVE TO CSV
 cell2csv(output_file, [header; output]);
-disp(['✅ Features saved to ', output_file]);
+disp(['Features saved to ', output_file]);
 
 
 % === HELPER FUNCTION ===
@@ -317,7 +317,7 @@ header = [{'Subject', 'Group', 'Task', 'Channel'}, band_names, {'TBR'}];
 
 % === SAVE TO CSV
 cell2csv(output_file, [header; output]);
-disp(['✅ Features saved to ', output_file]);
+disp(['Features saved to ', output_file]);
 
 
 % AGAIN
@@ -426,4 +426,4 @@ header = [{'Subject', 'Group', 'SegmentID', 'Channel'}, band_names, {'TBR'}];
 
 % === SAVE TO CSV
 cell2csv(output_file, [header; output]);
-disp(['✅ Features saved to ', output_file]);
+disp(['Features saved to ', output_file]);
